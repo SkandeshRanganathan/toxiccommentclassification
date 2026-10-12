@@ -1,0 +1,53 @@
+# Experiment Configuration
+
+project:
+  name: "Toxic_Comment_Detection"
+  seed: 42
+  output_dir: "outputs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+
+data:
+  raw_data_path: "data/raw/train.csv"
+  processed_dir: "data/processed"
+  text_col: "comment_text"
+  label_cols: ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+  max_seq_length: 64
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+
+model:
+  encoder_name: "microsoft/deberta-v3-base"
+  embedding_dim: 768
+  num_labels: 6
+  dropout_rate: 0.1
+  
+  # Module toggles for ablation studies
+  use_faiss_memory: true
+  use_adaptive_selection: false
+  use_prototype_attention: true
+  use_label_correlation: false
+  
+  retrieval:
+    k_nearest: 10
+    index_type: "inner_product" # l2 or inner_product
+    normalize_embeddings: true
+    
+  attention:
+    num_heads: 8
+    
+training:
+  batch_size: 4
+  eval_batch_size: 8
+  epochs: 1
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  mixed_precision: false # Uses torch.cuda.amp
+  max_grad_norm: 1.0
+  patience: 3 # Early stopping
+  
+evaluation:
+  optimize_thresholds: true
+  default_threshold: 0.5
